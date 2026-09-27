@@ -107,6 +107,18 @@ export function LinkCard({
     });
   }, []);
 
+  const handleMouseLeave = useCallback(() => {
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
+    const card = cardRef.current;
+    if (card) {
+      card.style.removeProperty('--pointer-x');
+      card.style.removeProperty('--pointer-y');
+    }
+  }, []);
+
   const mergedRef = useCallback((node: HTMLDivElement | null) => {
     setNodeRef(node);
     (cardRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
@@ -150,6 +162,7 @@ export function LinkCard({
       onClick={handleClick}
       onContextMenu={(e) => onContextMenu(e, link)}
       onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
       {...(isDraggable && !isBatchEditMode ? attributes : {})}
       {...(isDraggable && !isBatchEditMode ? listeners : {})}
     >
@@ -208,7 +221,7 @@ export function LinkCard({
       )}
 
       {/* Link content */}
-      <div className={`icon-main flex flex-1 min-w-0 overflow-hidden h-full w-full ${
+      <div className={`icon-main flex flex-1 min-w-0 h-full w-full ${
         isDetailedView
           ? 'flex-col md:flex-row md:gap-4 md:items-center'
           : isAppView
@@ -218,8 +231,8 @@ export function LinkCard({
         {isDetailedView ? (
           <div className="flex flex-col md:flex-row md:items-start gap-3 w-full min-w-0">
             <div className="flex items-center gap-3 w-full md:hidden">
-              <div className="text-blue-600 dark:text-blue-400 flex items-center justify-center text-sm font-bold uppercase shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800 shadow-sm">
-                {iconSrc ? <img src={iconSrc} alt="" className="w-6 h-6" loading="lazy" onError={() => setImgError(true)} /> : link.title.charAt(0).toUpperCase()}
+              <div className="text-blue-600 dark:text-blue-400 flex items-center justify-center text-sm font-bold uppercase shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800 border border-slate-200/80 dark:border-slate-700/60 shadow-sm">
+                {iconSrc ? <img src={iconSrc} alt="" className="w-6 h-6 object-contain" loading="lazy" onError={() => setImgError(true)} /> : link.title.charAt(0).toUpperCase()}
               </div>
               <h3 className="flex-1 min-w-0 text-slate-800 dark:text-slate-200 text-base font-medium overflow-hidden text-ellipsis whitespace-nowrap group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" title={link.title}>
                 {link.title}
@@ -230,8 +243,8 @@ export function LinkCard({
                 {link.description}
               </p>
             )}
-            <div className="hidden md:flex text-blue-600 dark:text-blue-400 items-center justify-center text-sm font-bold uppercase shrink-0 w-14 h-14 rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800 shadow-sm">
-              {iconSrc ? <img src={iconSrc} alt="" className="w-10 h-10" loading="lazy" onError={() => setImgError(true)} /> : link.title.charAt(0).toUpperCase()}
+            <div className="hidden md:flex text-blue-600 dark:text-blue-400 items-center justify-center text-sm font-bold uppercase shrink-0 w-14 h-14 rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800 border border-slate-200/80 dark:border-slate-700/60 shadow-sm">
+              {iconSrc ? <img src={iconSrc} alt="" className="w-10 h-10 object-contain" loading="lazy" onError={() => setImgError(true)} /> : link.title.charAt(0).toUpperCase()}
             </div>
             <div className="hidden md:flex flex-1 min-w-0 flex-col justify-start w-full">
               <h3 className="text-slate-800 dark:text-slate-200 text-base font-medium w-full min-w-0 overflow-hidden text-ellipsis whitespace-nowrap group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" title={link.title}>
@@ -247,7 +260,7 @@ export function LinkCard({
         ) : isAppView ? (
           <>
             <div className="flex flex-col items-center justify-center w-full min-w-0">
-              <div className="text-blue-600 dark:text-blue-400 flex items-center justify-center text-base sm:text-lg font-bold uppercase shrink-0 w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800 shadow-sm transition-all duration-200 group-hover:scale-110 group-hover:-translate-y-0.5 group-hover:shadow-md">
+              <div className="text-blue-600 dark:text-blue-400 flex items-center justify-center text-base sm:text-lg font-bold uppercase shrink-0 w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800 border border-slate-200/80 dark:border-slate-700/60 shadow-sm transition-all duration-200 group-hover:scale-110 group-hover:-translate-y-0.5 group-hover:shadow-md">
                 {iconSrc ? (
                   <img src={iconSrc} alt="" className="w-8 h-8 sm:w-9 sm:h-9 object-contain" loading="lazy" onError={() => setImgError(true)} />
                 ) : (
@@ -268,7 +281,7 @@ export function LinkCard({
           <>
             <div className="flex items-center gap-3 w-full">
               <div className="text-blue-600 dark:text-blue-400 flex items-center justify-center text-sm font-bold uppercase shrink-0 w-8 h-8 rounded-lg bg-slate-50 dark:bg-slate-700">
-                {iconSrc ? <img src={iconSrc} alt="" className="w-5 h-5" loading="lazy" onError={() => setImgError(true)} /> : link.title.charAt(0).toUpperCase()}
+                {iconSrc ? <img src={iconSrc} alt="" className="w-5 h-5 object-contain" loading="lazy" onError={() => setImgError(true)} /> : link.title.charAt(0).toUpperCase()}
               </div>
               <h3 className="text-sm font-medium text-slate-800 dark:text-slate-200 truncate whitespace-nowrap overflow-hidden text-ellipsis group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" title={link.title}>
                 {link.title}
